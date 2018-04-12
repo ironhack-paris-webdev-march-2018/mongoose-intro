@@ -29,50 +29,68 @@ const Cat = mongoose.model("Cat", catSchema);
 const jeremieCat = new Cat({ name: "Lennox" });
 
 // save the new cat document to the database
-jeremieCat.save()
-  .then(() => {
-    console.log("Saved Jeremie's cat!");
-  })
-  .catch((err) => {
-    console.log("ERROR Jeremie's cat", err);
-  });
+const jeremiePromise =
+  jeremieCat.save()
+    .then(() => {
+      console.log("Saved Jeremie's cat!");
+    })
+    .catch((err) => {
+      console.log("ERROR Jeremie's cat", err);
+    });
 // jeremieCat.save().then().catch();
 
 const patrycjaCat = new Cat({ name: "Lyra" });
-patrycjaCat.save()
-  .then(() => {
-    console.log("Saved Patrycja's cat!");
-  })
-  .catch((err) => {
-    console.log("ERROR Patrycja's cat", err);
-  });
+const patrycjaPromise =
+  patrycjaCat.save()
+    .then(() => {
+      console.log("Saved Patrycja's cat!");
+    })
+    .catch((err) => {
+      console.log("ERROR Patrycja's cat", err);
+    });
 
 // find all the cats
-Cat.find({})
-  .then((catsFromDb) => {
-    catsFromDb.forEach((oneCat) => {
-      // display name and _id for each cat
-      console.log(`meow ${oneCat.name} id: ${oneCat._id}`);
+const findPromise =
+  Cat.find({})
+    .then((catsFromDb) => {
+      catsFromDb.forEach((oneCat) => {
+        // display name and _id for each cat
+        console.log(`meow ${oneCat.name} id: ${oneCat._id}`);
+      });
+    })
+    .catch((err) => {
+      console.log("ERROR find", err);
     });
-  })
-  .catch((err) => {
-    console.log("ERROR find", err);
-  });
 
 
-Cat.findByIdAndRemove("5acf24e87ef1e4bfd92070ad")
-  .then(() => {
-    console.log("Delete worked!");
-  })
-  .catch((err) => {
-    console.log("DELETE failed 🤨", err);
-  });
+const removePromise =
+  Cat.findByIdAndRemove("5acf24e87ef1e4bfd92070ad")
+    .then(() => {
+      console.log("Delete worked!");
+    })
+    .catch((err) => {
+      console.log("DELETE failed 🤨", err);
+    });
+
+const updatePromise =
+  Cat.findByIdAndUpdate("5acf29e80bf2f6c319cdd23c", { $inc: { age: 1 } })
+    .then((updatedCat) => {
+      console.log(`Update to: ${updatedCat.age}`);
+    })
+    .catch((err) => {
+      console.log("UPDATE failed 😩", err);
+    });
 
 
-Cat.findByIdAndUpdate("5acf29e80bf2f6c319cdd23c", { $inc: { age: 1 } })
-  .then((updatedCat) => {
-    console.log(`Update to: ${updatedCat.age}`);
-  })
-  .catch((err) => {
-    console.log("UPDATE failed 😩", err);
-  });
+// After all the queries are done, disconnect.
+Promise.all([
+  jeremiePromise,
+  patrycjaPromise,
+  findPromise,
+  removePromise,
+  updatePromise
+])
+.then(() => {
+  console.log("FINISHED! 🥐");
+  mongoose.disconnect();
+});
